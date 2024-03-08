@@ -1,0 +1,61 @@
+plugins {
+  id "io.freefair.lombok" version "${lombokPluginVersion}"
+  id 'org.springframework.boot' version "${springBootVersion}"
+  id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
+  id 'java'
+}
+
+group = 'org.fp024'
+version = '0.0.1-SNAPSHOT'
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of("${javaVersion}")
+  }
+}
+
+[compileJava, compileTestJava]*.options*.encoding = "${projectEncoding}"
+
+tasks.withType(JavaCompile) {
+  options.compilerArgs << '-parameters'
+}
+
+repositories {
+  mavenLocal {    
+    content {
+      includeGroup "org.fp024.test.util"
+    }
+  }
+  mavenCentral()
+}
+
+configurations {
+  all {
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+  }
+}
+
+
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-security'
+  implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
+  implementation 'org.springframework.boot:spring-boot-starter-webflux'
+  
+  developmentOnly 'org.springframework.boot:spring-boot-devtools'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+  testImplementation 'org.springframework.security:spring-security-test'
+  testImplementation 'io.projectreactor:reactor-test'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+  testImplementation "org.fp024.test.util:my-test-util:${myTestUtilVersion}"
+}
+
+tasks.named('test') {
+  useJUnitPlatform()
+  testLogging {
+    outputs.upToDateWhen { false }
+    showStandardStreams = true
+  }
+}
