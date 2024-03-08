@@ -5,7 +5,6 @@ import static org.springframework.security.config.Customizer.*;
 import java.time.LocalTime;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
-import org.fp024.examples.time.TimeProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authorization.AuthorizationDecision;
@@ -18,12 +17,6 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Configuration
 public class WebAuthorizationConfig {
-
-  private final TimeProvider timeProvider;
-
-  public WebAuthorizationConfig(TimeProvider timeProvider) {
-    this.timeProvider = timeProvider;
-  }
 
   @Bean
   SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
@@ -43,7 +36,7 @@ public class WebAuthorizationConfig {
 
     String path = getRequestPath(c);
 
-    var now = timeProvider.now();
+    var now = LocalTime.now();
     LOGGER.info("### LocalTime.now(): {}", now);
     // 💡 현재 시간이 12:00 이후면 제한된 시간
     boolean restrictedTime = //

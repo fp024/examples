@@ -4,37 +4,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import java.time.LocalTime;
-import org.fp024.examples.time.MockTimeProvider;
-import org.junit.jupiter.api.AfterEach;
+import lombok.extern.slf4j.Slf4j;
+import org.fp024.test.util.fixeddate.extension.FixedDateExtension;
+import org.fp024.test.util.fixeddate.extension.annotation.FixedLocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+/*
+ 💡 mockStatic 기능으로 만든 정적 모의 객체가,
+    다른 스레드에서는 동작하지 않기 때문에 테스트는 실패한다. 🥲
+
+    참고: https://github.com/mockito/mockito/issues/2142
+*/
+@Slf4j
 @SpringBootTest
 @AutoConfigureWebTestClient
-@ActiveProfiles("test")
+@ExtendWith(FixedDateExtension.class)
 class MainTests {
 
   @Autowired private WebTestClient client;
 
-  @Autowired private ApplicationContext context;
-
-  private void setFixedTime(LocalTime now) {
-    MockTimeProvider timeProvider = context.getBean(MockTimeProvider.class);
-    timeProvider.setTime(now);
-  }
-
-  @AfterEach
-  void afterEach() {
-    setFixedTime(LocalTime.of(12, 0));
-  }
-
+  @FixedLocalTime(hour = 12, minute = 0)
   @Test
   @DisplayName(
       "인증된 사용자 없이 /hello 엔드포인트를 호출 했을 때, " //
@@ -50,6 +46,7 @@ class MainTests {
         .isUnauthorized();
   }
 
+  @FixedLocalTime(hour = 12, minute = 0)
   @Test
   @DisplayName(
       " ADMIN 역할을 가지고 있는 Mock 사용자이면 /hello 엔드포인트를 호출 했을 때, " //
@@ -69,6 +66,7 @@ class MainTests {
                     .isEqualTo("Hello user"));
   }
 
+  @FixedLocalTime(hour = 12, minute = 0)
   @Test
   @DisplayName(
       "ADMIN 역할을 가지지 않은 Mock 사용자로 /hello 엔드포인트를 호출 했을 때, " //
@@ -85,6 +83,7 @@ class MainTests {
         .isForbidden();
   }
 
+  @FixedLocalTime(hour = 12, minute = 0)
   @Test
   @DisplayName(
       "ADMIN 역할을 가진 사용자라도 /ciao 엔드포인트를 호출 했을 때, " //
@@ -99,6 +98,7 @@ class MainTests {
         .isForbidden();
   }
 
+  @FixedLocalTime(hour = 12, minute = 1)
   @Test
   @DisplayName(
       "ADMIN 역할을 가지고 있는 유저가 /hello 엔드포인트를 호출 하더라도, " //
@@ -108,7 +108,7 @@ class MainTests {
       username = "john",
       roles = {"ADMIN"})
   void testCallHelloWithMockUser_Afternoon() {
-    setFixedTime(LocalTime.of(12, 1));
+    LOGGER.info("### {} ###", LocalTime.now());
     client
         .get() //
         .uri("/hello")
