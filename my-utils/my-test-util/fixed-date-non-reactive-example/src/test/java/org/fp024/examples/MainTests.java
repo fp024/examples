@@ -1,7 +1,6 @@
 package org.fp024.examples;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import java.time.LocalTime;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -20,11 +19,16 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  💡 mockStatic 기능으로 만든 정적 모의 객체가,
     다른 스레드에서는 동작하지 않기 때문에 테스트는 실패한다. 🥲
 
+    Non-Reactive 프로젝트도 만들어봤다.
+
+    설정 클래스만 Non-Reactive로 바꾸고, 테스트 클래스는 따로 MockMVC로 바꾸진 않았다.
+    - mutateWith()는 사용할 수 없어서, @WithMockUser로 바꿨다.
+
     참고: https://github.com/mockito/mockito/issues/2142
 */
 @Slf4j
 @SpringBootTest
-@AutoConfigureWebTestClient
+@AutoConfigureMockMvc
 @ExtendWith(FixedDateExtension.class)
 class MainTests {
 
@@ -71,11 +75,9 @@ class MainTests {
   @DisplayName(
       "ADMIN 역할을 가지지 않은 Mock 사용자로 /hello 엔드포인트를 호출 했을 때, " //
           + "애플리케이션은 HTTP 403 FORBIDDEN을 반환해야한다.")
+  @WithMockUser(roles = "USER")
   void testCallHelloWithValidUserWithMockUser() {
-    client
-        .mutateWith(
-            mockUser() //
-                .roles("USER")) //
+    client //
         .get()
         .uri("/hello")
         .exchange()

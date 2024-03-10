@@ -3,36 +3,35 @@ package org.fp024.examples.config;
 import static org.springframework.security.config.Customizer.*;
 
 import java.time.LocalTime;
-import java.util.function.Function;
+import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authorization.AuthorizationDecision;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.authorization.AuthorizationContext;
-import reactor.core.publisher.Mono;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
 @Slf4j
 @Configuration
 public class WebAuthorizationConfig {
 
   @Bean
-  SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+  SecurityFilterChain securityWebFilterChain(HttpSecurity http) throws Exception {
 
-    http.authorizeExchange(
-            authorizeExchangeCustomizer ->
-                authorizeExchangeCustomizer //
-                    .anyExchange()
-                    .access(this::getAuthorizationDecisionMono))
+    http.authorizeHttpRequests(
+            authorizeHttpRequestsCustomizer ->
+                authorizeHttpRequestsCustomizer //
+                    .anyRequest()
+                    .access(this::getAuthorizationDecision))
         .httpBasic(withDefaults());
 
     return http.build();
   }
 
-  private Mono<AuthorizationDecision> getAuthorizationDecisionMono(
-      Mono<Authentication> a, AuthorizationContext c) {
+  private AuthorizationDecision getAuthorizationDecision(
+      Supplier<Authentication> a, RequestAuthorizationContext c) {
 
     String path = getRequestPath(c);
 
@@ -43,25 +42,19 @@ public class WebAuthorizationConfig {
         now.isAfter(LocalTime.NOON);
 
     if (path.equals("/hello")) {
-      return a.map(isAdmin()) //
-          .map(auth -> auth && !restrictedTime)
-          .map(AuthorizationDecision::new);
+      return new AuthorizationDecision(isAdmin(a) && !restrictedTime);
     }
 
     // 💡 "/hello" 외의 엔드포인트는 어떤 경우이든. 접근 금지
-    return Mono.just(new AuthorizationDecision(false));
+    return new AuthorizationDecision(false);
   }
 
-  private String getRequestPath(AuthorizationContext c) {
-    return c.getExchange() //
-        .getRequest()
-        .getPath()
-        .toString();
+  private String getRequestPath(RequestAuthorizationContext c) {
+    return c.getRequest().getRequestURI();
   }
 
-  private Function<Authentication, Boolean> isAdmin() {
-    return p ->
-        p.getAuthorities().stream() //
-            .anyMatch(e -> e.getAuthority().equals("ROLE_ADMIN"));
+  private Boolean isAdmin(Supplier<Authentication> p) {
+    return p.get().getAuthorities().stream() //
+        .anyMatch(e -> e.getAuthority().equals("ROLE_ADMIN"));
   }
 }
