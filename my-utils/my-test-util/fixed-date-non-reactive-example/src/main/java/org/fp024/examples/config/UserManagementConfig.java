@@ -2,16 +2,16 @@ package org.fp024.examples.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 public class UserManagementConfig {
   @Bean
-  ReactiveUserDetailsService userDetailsService() {
+  UserDetailsService userDetailsService() {
 
     var u =
         User.withUsername("john") //
@@ -19,7 +19,7 @@ public class UserManagementConfig {
             .roles("ADMIN")
             .build();
 
-    return new MapReactiveUserDetailsService(u);
+    return new InMemoryUserDetailsManager(u);
   }
 
   @Bean
