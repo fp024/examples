@@ -35,6 +35,7 @@ configurations {
   }
 }
 
+ext['mockito.version'] = "${mockitoVersion}"
 
 dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-security'
