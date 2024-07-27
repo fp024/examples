@@ -1,0 +1,56 @@
+plugins {
+  id "application"
+  alias(libs.plugins.lombok)
+}
+
+[compileJava, compileTestJava]*.options*.encoding = "${projectEncoding}"
+
+repositories {
+  mavenCentral()
+  maven { url 'https://repo.spring.io/snapshot' }
+}
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of("${javaVersion}")
+  }
+}
+
+dependencies {
+  implementation (libs.log4j.core)
+  implementation (libs.log4j.slf4j2.impl)
+
+  implementation enforcedPlatform(libs.spring.bom)
+
+  implementation 'org.springframework:spring-context'
+  implementation 'org.springframework:spring-jdbc'
+  implementation (libs.spring.data.jdbc)
+
+  runtimeOnly (libs.mysql.connector.j)
+  implementation (libs.log4jdbc.log4j2.jdbc4)
+
+  testImplementation 'org.springframework:spring-test'
+  
+  testImplementation (libs.junit.jupiter)
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+  testImplementation (libs.assertj.core)
+
+  implementation platform(libs.testcontainer.bom)
+  implementation('org.testcontainers:mysql')
+
+  testImplementation 'org.testcontainers:junit-jupiter'
+
+}
+
+
+tasks.named("test") {
+  useJUnitPlatform()
+  testLogging {
+    outputs.upToDateWhen { false }
+    showStandardStreams = true
+  }
+}
+
+application {
+  mainClass = 'org.fp024.example.Main'
+}

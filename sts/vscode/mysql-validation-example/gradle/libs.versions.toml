@@ -1,0 +1,51 @@
+#########################################################################################################
+[versions]
+##### plguins versions #####
+# https://plugins.gradle.org/plugin/io.freefair.lombok
+lombok-plugin = "8.6"
+
+##### librarires versions #####
+# Spring 최신 버전
+spring = "6.1.11"
+
+spring-data = "3.3.2"
+
+log4j = "2.23.1"
+
+hsqldb = "2.7.3"
+mysql-connector-j = "8.0.33"
+hikaricp = "5.1.0"
+
+junit = "5.10.3"
+assertj = "3.26.3"
+
+# https://log4jdbc.brunorozendo.com/
+# https://mvnrepository.com/artifact/org.bgee.log4jdbc-log4j2/log4jdbc-log4j2-jdbc4.1
+log4jdbc = "1.16"
+
+testcontainer = "1.20.0"
+
+#########################################################################################################
+[libraries]
+
+spring-bom = { module = "org.springframework:spring-framework-bom", version.ref = "spring"}
+
+spring-data-jdbc = { module = "org.springframework.data:spring-data-jdbc", version.ref = "spring-data" }
+
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+log4j-slf4j2-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
+
+hsqldb = { module = "org.hsqldb:hsqldb", version.ref = "hsqldb" }
+mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql-connector-j" }
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
+
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+
+log4jdbc-log4j2-jdbc4 = { module = "org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1", version.ref = "log4jdbc" }
+
+testcontainer-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainer"}
+
+#########################################################################################################
+[plugins]
+lombok = { id = "io.freefair.lombok", version.ref = "lombok-plugin" }

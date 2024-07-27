@@ -1,0 +1,12 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+# 개발도구 환경설정 디렉토리 무시
+.idea
+bin
+.vscode
+
+*.log
