@@ -6,10 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.jdbc.core.dialect.JdbcMySqlDialect;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
-import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -24,7 +22,13 @@ import org.testcontainers.containers.MySQLContainer;
 @EnableJdbcRepositories("org.fp024.example.repository")
 public class BookConfiguration extends AbstractJdbcConfiguration {
 
+  /*
+   Generic wildcard types should not be used in return types 경고가 발생하는데,
+   반환 타입은 실체 타입을 쓰라고 하지만,
+   이 부분은 testcontainer의 가이드 대로 하는 것이여서,일단 경고를 억제해야겠다.
+  */
   @Bean(destroyMethod = "stop")
+  @SuppressWarnings("java:S1452")
   MySQLContainer<?> mySQLContainer() {
     MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0.39-debian");
     mysql.start();
@@ -43,7 +47,7 @@ public class BookConfiguration extends AbstractJdbcConfiguration {
   }
 
   private String adjustJdbcUrlForLog4Jdbc(String originUrl) {
-    return "jdbc:log4jdbc" + originUrl.replaceFirst("jdbc", "");
+    return originUrl.replaceFirst("jdbc", "jdbc:log4jdbc");
   }
 
   @Bean
