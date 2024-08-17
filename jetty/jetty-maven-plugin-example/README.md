@@ -24,6 +24,10 @@ java.lang.IllegalArgumentException: Resource must exist and cannot be a director
 
 
 
+**그래서 단순하게 Jetty의 기존 버전과 최신 버전에서**
+
+ **`WebApplicationInitializer`  설정을 잘 확인하는지?에 대한 단순 예제를 만들었다.** 
+
 
 
 ## 예제 실행
