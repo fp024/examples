@@ -79,6 +79,26 @@ Jetty가 `12.0.7` 버전까지는 webApp 설정에 `descriptor`에 경로를 지
 
 해당 스터디 프로젝트의 jetty-ee8과 jetty-ee10 설정에서만 `descriptor` 수동 설정을 지웠음.
 
+💡멀티 모듈 프로젝트의 특별한 설정에 의해 어떤 경우에는 web.xml 설정을 해야할 경우가 있고, 하지말아야할 경우가 있다면 저 설정 자체를 지우기 애매할 경우가 있는데 그때는 
+
+```xml
+<web-xml-location></web-xml-location>
+```
+
+값을 비워두면 정상 동작한다. 
+
+* 동작 확인 실행 명령
+
+  ```bash
+  mvn clean jetty:run -Pjetty_latest_workaround
+  ```
+
+  
+
+
+
+
+
 
 
 

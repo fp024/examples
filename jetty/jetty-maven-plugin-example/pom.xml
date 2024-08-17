@@ -32,15 +32,45 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
+        <!--
+          💡12.0.7 버전 까지는 명시한 web.xml 파일이 존재하지 않아도 오류가 발생하지 않았다.
+        -->
         <jetty.version>12.0.7</jetty.version>
+        <web-xml-location>${project.basedir}/src/main/webapp/WEB-INF/web.xml</web-xml-location>
+      </properties>
+    </profile>
+    <profile>
+      <id>jetty_12_0_8</id>
+      <properties>
+        <!--
+          💡12.0.8 버전 부터 확실하게 경로 검사를 하게되어, 명시한 web.xml 파일이 없으면 오류가 난다.
+        -->
+        <jetty.version>12.0.8</jetty.version>
+        <web-xml-location>${project.basedir}/src/main/webapp/WEB-INF/web.xml</web-xml-location>
       </properties>
     </profile>
     <profile>
       <id>jetty_latest</id>
       <properties>
+        <!--
+          💡2024년 8월 시점 최신 버전인 12.0.12 또한, 명시한 web.xml 파일이 없으면 오류가 난다.
+        -->
         <jetty.version>12.0.12</jetty.version>
+        <web-xml-location>${project.basedir}/src/main/webapp/WEB-INF/web.xml</web-xml-location>
       </properties>
     </profile>
+    <profile>
+      <id>jetty_latest_workaround</id>
+      <properties>
+        <jetty.version>12.0.12</jetty.version>
+        <!--
+          💡멀티 모듈 프로젝트의 특별한 설정에 의해 어떤 경우에는 web.xml 설정을 해야할 경우가 있고, 하지말아야할 경우가 있다면
+            필요없을 경우는 빈값으로 설정해주면 된다.
+        -->
+        <web-xml-location></web-xml-location>
+      </properties>
+    </profile>
+
   </profiles>
 
   <dependencyManagement>
@@ -97,6 +127,7 @@
         <configuration>
           <webApp>
             <contextPath>/</contextPath>
+            <descriptor>${web-xml-location}</descriptor>
           </webApp>
           <deployMode>EMBED</deployMode>
           <stopKey>CTRL+C</stopKey>
