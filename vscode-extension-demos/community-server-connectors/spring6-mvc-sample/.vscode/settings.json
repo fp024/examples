@@ -1,0 +1,20 @@
+{
+  "maven.terminal.favorites": [
+    {
+      "command": "clean package war:exploded -DskipTests",
+      "debug": false
+    },
+    {
+      "command": "clean package -DskipTests",
+      "debug": false
+    }
+  ],
+  "rsp-ui.rsp.java.home": "C:\\JDK\\17",
+  "rsp-ui.enableStartServerOnActivation": [
+    {
+      "id": "redhat.vscode-community-server-connector",
+      "name": "Community Server Connector",
+      "startOnActivation": true
+    }
+  ]
+}
