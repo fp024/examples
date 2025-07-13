@@ -1,0 +1,13 @@
+version: "0.2"
+ignorePaths: [
+  "cspell.config.yaml",
+  "gradlew*"
+]
+dictionaryDefinitions: []
+dictionaries: []
+words:
+  - freefair
+  - projectreactor
+  - webflux
+ignoreWords: []
+import: []
